@@ -19,6 +19,11 @@ const models = [
     description: "Whoa this is a big boy!",
     variants: [{ name: "6B", params: 6000 }],
   },
+  {
+    name: "Bloom",
+    description: "Holy shit!",
+    variants: [{ name: "175B", params: 175000 }],
+  },
 ];
 
 function classNames(...classes: string[]) {
