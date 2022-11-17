@@ -37,7 +37,8 @@ export default function Graph(props: any) {
       cooldownTicks={240}
       onEngineStop={() => {
         if (fgRef.current) {
-          fgRef.current.zoomToFit(400);
+          //fgRef.current.zoomToFit(400);
+          console.log("Fix zoom lol");
         }
       }}
     />
