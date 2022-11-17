@@ -25,7 +25,7 @@ export default function Graph(props: any) {
     <ForceGraph3D
       ref={fgRef}
       graphData={genRandomTree(Math.ceil(modelSize / 5), true)}
-      linkColor={() => "rgb(255,255,255, 100)"}
+      linkColor={() => "rgb(255,255,255, 150)"}
       nodeColor={() => "rgb(99,102,241)"}
       nodeOpacity={1.0}
       nodeRelSize={5}
