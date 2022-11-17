@@ -68,7 +68,8 @@ export default function Overview() {
 
         {/* Model visualization */}
         <div className="mt-10 lg:col-start-2 lg:row-span-2 lg:mt-0 lg:self-center">
-          <div className="aspect-w-1 aspect-h-1 overflow-hidden rounded-lg">
+          <div className="aspect-w-1 aspect-h-1 overflow-hidden rounded-lg relative">
+            <div className="absolute w-full h-full to-black via-transparent from-transparent bg-gradient-radial z-10 pointer-events-none" />
             <Graph
               modelSize={
                 selectedVariant >= selectedModel.variants.length
