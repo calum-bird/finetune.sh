@@ -2,6 +2,8 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
+Install the [supabase cli](https://supabase.com/docs/guides/cli).
+
 First, run the development server:
 
 ```bash
