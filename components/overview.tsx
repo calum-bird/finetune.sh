@@ -177,7 +177,7 @@ export default function Overview() {
                               classNames(
                                 active
                                   ? "text-white bg-indigo-600"
-                                  : "text-gray-200",
+                                  : "text-gray-600",
                                 "cursor-default select-none relative py-2 pl-10 pr-4"
                               )
                             }
