@@ -1,8 +1,13 @@
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { Listbox, RadioGroup, Transition } from "@headlessui/react";
 import { ShieldCheckIcon } from "@heroicons/react/24/outline";
 import Graph from "./network";
+import { Session } from "@supabase/supabase-js";
+import { ComponentSession } from "../services/lib/useSession";
+import { logout } from "../services/lib/logout";
+import { FinetuneJob, getJobs } from "../services/lib/getJobs";
+const MAX_FILE_SIZE = 1024 * 1024 * 1024 * 5; // 5gb
 interface Variant {
   name: string;
   params: number;
@@ -68,28 +73,91 @@ const ProductDetails = (
     </section>
   </div>
 );
-export default function Overview() {
+const WelcomeBack = (
+  <div className="lg:max-w-lg lg:self-end">
+    <button className="text-slate-600" onClick={logout}>
+      sign out
+    </button>
+    <div className="mt-4">
+      <h1 className="text-3xl font-bold tracking-tight text-gray-200 sm:text-4xl">
+        Welcome back 👋
+      </h1>
+    </div>
+  </div>
+);
+
+function JobQueue(): JSX.Element {
+  const [jobs, setJobs] = useState<FinetuneJob[]>([]);
+  useEffect(() => {
+    getJobs(
+      (jobs) => setJobs(jobs),
+      (error) => console.error(error)
+    );
+  }, []);
+  return (
+    <div className="max-h-[60vh] overflow-hidden overflow-y-scroll p-2">
+      <h2 className="text-xl font-semibold">Jobs</h2>
+      <div className="mt-2 flex flex-col gap-3 mx-1">
+        {jobs.map((job) => (
+          <JobCard job={job} />
+        ))}
+      </div>
+    </div>
+  );
+}
+export default function Overview({ session }: { session: ComponentSession }) {
   const [selectedModel, setSelectedModel] = useState<Model>(models[0]);
   const [selectedVariant, setSelectedVariant] = useState(0);
+  const loggedOut = session === "fetching" || session === "invalid";
 
   return (
     <div className="bg-black" style={{ minHeight: "100vh" }}>
       <div className="mx-auto max-w-2xl py-16 px-4 sm:py-24 sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8">
-        {ProductDetails}
-        <ModelVisualization
-          selectedVariant={selectedVariant}
-          selectedModel={selectedModel}
-        />
+        {loggedOut ? ProductDetails : WelcomeBack}
+        <div className="mt-10 lg:col-start-2 lg:row-span-2 lg:mt-0 lg:self-center">
+          {loggedOut ? (
+            <ModelVisualization
+              selectedVariant={selectedVariant}
+              selectedModel={selectedModel}
+            />
+          ) : (
+            <JobQueue />
+          )}
+        </div>
         <ProductForm
           selectedModel={selectedModel}
           setSelectedModel={setSelectedModel}
           selectedVariant={selectedVariant}
           setSelectedVariant={setSelectedVariant}
+          session={session}
         />
       </div>
     </div>
   );
 }
+function JobCard({ job }: { job: FinetuneJob }): JSX.Element {
+  const statusMap = [
+    <>In queue</>,
+    <>Processing... time elapsed 2 hours</>,
+    <>Done!</>,
+  ];
+  return (
+    <div className=" border border-slate-500 rounded-md p-2" key={job.id}>
+      <div className="flex flex-row justify-between items-center">
+        <div className="flex flex-col">
+          <div>{statusMap[job.status]}</div>
+          <i className="text-sm text-slate-400">{job.job_type}</i>
+          <div className="text-sm text-slate-400">{job.created_at}</div>
+        </div>
+        <div className="flex flex-row gap-5">
+          <div>share</div>
+          <div>download</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ModelVisualization({
   selectedVariant,
   selectedModel,
@@ -98,7 +166,7 @@ function ModelVisualization({
   selectedModel: Model;
 }) {
   return (
-    <div className="mt-10 lg:col-start-2 lg:row-span-2 lg:mt-0 lg:self-center">
+    <>
       <div className="aspect-w-1 aspect-h-1 overflow-hidden rounded-lg relative">
         <div className="absolute w-full h-full to-black via-transparent from-transparent bg-gradient-radial z-10 pointer-events-none" />
         <Graph
@@ -112,7 +180,7 @@ function ModelVisualization({
       <h4 className="text-center text-gray-400 text-sm">
         1&nbsp;:&nbsp;1,000,000 scale
       </h4>
-    </div>
+    </>
   );
 }
 
@@ -121,12 +189,15 @@ function ProductForm({
   setSelectedModel,
   selectedVariant,
   setSelectedVariant,
+  session,
 }: {
   selectedModel: Model;
   setSelectedModel: (model: Model) => void;
   selectedVariant: number;
   setSelectedVariant: (variant: number) => void;
+  session: ComponentSession;
 }) {
+  const [jsonlFile, setJsonlFile] = useState<File | null>(null);
   return (
     <div className="mt-10 lg:col-start-1 lg:row-start-2 lg:max-w-lg lg:self-start">
       <section aria-labelledby="options-heading">
@@ -147,6 +218,31 @@ function ProductForm({
               setSelectedVariant={setSelectedVariant}
               selectedModel={selectedModel}
             />
+          </div>
+
+          <div className="mt-3">
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-gray-300">
+                JSON-L file
+              </label>
+              <input
+                type="file"
+                accept=".jsonl"
+                onChange={(e) => {
+                  const files = e.target.files;
+                  if (files !== null) {
+                    if (files.length === 1) {
+                      const file = files.item(0);
+                      if (file!.size > MAX_FILE_SIZE) {
+                        alert("File size too large! Contact us for help");
+                      } else {
+                        setJsonlFile(file);
+                      }
+                    }
+                  }
+                }}
+              />
+            </div>
           </div>
           <div className="mt-10">
             <button
