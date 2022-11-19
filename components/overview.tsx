@@ -177,7 +177,7 @@ export default function Overview() {
                               classNames(
                                 active
                                   ? "text-white bg-indigo-600"
-                                  : "text-gray-200",
+                                  : "text-gray-600",
                                 "cursor-default select-none relative py-2 pl-10 pr-4"
                               )
                             }
@@ -224,12 +224,15 @@ export default function Overview() {
                 </button>
               </div>
               <div className="mt-6 text-center">
-                <a href="#" className="group inline-flex text-base font-medium">
+                <a
+                  href="https://stripe.com/docs/security"
+                  className="group inline-flex text-base font-medium group-hover:text-gray-100"
+                >
                   <ShieldCheckIcon
-                    className="mr-2 h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+                    className="mr-2 h-6 w-6 flex-shrink-0 text-gray-400"
                     aria-hidden="true"
                   />
-                  <span className="text-gray-500 hover:text-gray-300">
+                  <span className="text-gray-500">
                     Payment secured through Stripe.
                   </span>
                 </a>
