@@ -1,4 +1,4 @@
-import { Model } from "../util/util";
+import { Model } from "../../util/util";
 import Graph from "./network";
 
 export default function ModelVisualization({
