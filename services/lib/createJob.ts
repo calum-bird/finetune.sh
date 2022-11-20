@@ -18,8 +18,21 @@ async function _createJob({
   { data: null; error: string } | { data: string; error: null }
 > {
   await fetch("/api/ensureBucket");
+  const res = await fetch("/api/getJsonlId", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ jsonlPath: file }),
+  });
+  if (res.status !== 200) {
+    return { error: "Cannot find json file", data: null };
+  }
+  const jsonId = (await res.text()).replaceAll('"', "");
+
   const { data, error } = await supabase.rpc("create_job", {
-    this_jsonl_path: file,
+    this_jsonl_id: jsonId,
     this_job_type: jobType,
   });
   if (error !== null) {

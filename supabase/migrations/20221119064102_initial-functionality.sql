@@ -75,19 +75,13 @@ GRANT EXECUTE ON FUNCTION public.request_job() TO postgres;
 GRANT EXECUTE ON FUNCTION public.request_job() TO service_role;
 
 CREATE OR REPLACE FUNCTION public.create_job(
-	this_jsonl_path text,
+	this_jsonl_id uuid,
 	this_job_type text)
     RETURNS text
     LANGUAGE 'plpgsql'
     COST 100
     VOLATILE PARALLEL UNSAFE
 AS $BODY$
-DECLARE
-    this_jsonl_id uuid := (
-        SELECT id 
-        FROM storage.objects as o 
-        WHERE o.name = this_jsonl_path
-    );
 BEGIN
   IF this_jsonl_id is NULL THEN
     RETURN 'jsonl not found!';
@@ -100,16 +94,16 @@ BEGIN
 END;
 $BODY$;
 
-ALTER FUNCTION public.create_job(text, text)
+ALTER FUNCTION public.create_job(uuid, text)
     OWNER TO postgres;
 
-GRANT EXECUTE ON FUNCTION public.create_job(text, text) TO PUBLIC;
+GRANT EXECUTE ON FUNCTION public.create_job(uuid, text) TO PUBLIC;
 
-GRANT EXECUTE ON FUNCTION public.create_job(text, text) TO anon;
+GRANT EXECUTE ON FUNCTION public.create_job(uuid, text) TO anon;
 
-GRANT EXECUTE ON FUNCTION public.create_job(text, text) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.create_job(uuid, text) TO authenticated;
 
-GRANT EXECUTE ON FUNCTION public.create_job(text, text) TO postgres;
+GRANT EXECUTE ON FUNCTION public.create_job(uuid, text) TO postgres;
 
-GRANT EXECUTE ON FUNCTION public.create_job(text, text) TO service_role;
+GRANT EXECUTE ON FUNCTION public.create_job(uuid, text) TO service_role;
 
