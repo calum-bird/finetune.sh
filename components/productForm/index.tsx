@@ -20,18 +20,18 @@ export default function ProductForm({
   setSelectedVariant: (variant: number) => void;
   session: ComponentSession;
 }) {
-  const [jsonlFile, setJsonlFile] = useState<File | null>(null);
+  const [uploadedFilePath, setUploadedFilePath] = useState("");
   const [loggingIn, setLoggingIn] = useState(false);
 
   const startJob = () => {
+    console.log(uploadedFilePath);
     if (session === "fetching" || session === "invalid") {
       setLoggingIn(true);
       return;
-    } else if (jsonlFile !== null) {
+    } else if (uploadedFilePath !== "") {
       createJob(
         {
-          session,
-          file: jsonlFile,
+          file: uploadedFilePath,
           job: "gptj_finetune",
         },
         () => {
@@ -66,7 +66,8 @@ export default function ProductForm({
             />
           </div>
 
-          <FileUploader jsonlFile={jsonlFile} setJsonlFile={setJsonlFile} />
+          <FileUploader setUploadedFilePath={setUploadedFilePath} />
+          {uploadedFilePath !== "" ? "Uploading... " : null}
 
           {loggingIn ? (
             <LoginFlow />
@@ -75,13 +76,13 @@ export default function ProductForm({
               <button
                 type="submit"
                 className="flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 py-3 px-8 text-base font-medium text-white hover:bg-indigo-700 disabled:opacity-50 disabled:hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
-                disabled={jsonlFile === null}
+                disabled={uploadedFilePath === ""}
                 onClick={(e) => {
                   e.preventDefault();
                   startJob();
                 }}
               >
-                {jsonlFile === null
+                {uploadedFilePath === ""
                   ? "Upload your dataset to continue."
                   : "Start finetuning 🚀"}
               </button>

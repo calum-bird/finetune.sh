@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { tempJsonlUpload } from "../services/lib/tempJsonlUpload";
 
 interface FileSize {
   decimal: number;
@@ -31,12 +32,26 @@ const getSizeUnit = (size: number): FileSize => {
 
 export default function FileUploader(props: any) {
   const MAX_FILE_SIZE = 1024 * 1024 * 1024 * 5; // 5gb
-  const { jsonlFile, setJsonlFile }: { jsonlFile: File; setJsonlFile: any } =
-    props;
+  const { setUploadedFilePath }: { setUploadedFilePath: any } = props;
 
   const [fileSize, setFileSize] = useState(-1);
+  const [jsonlFile, setJsonlFile] = useState<File | null>(null);
+  const [isUploaded, setIsUploaded] = useState(false);
 
   useEffect(() => {
+    if (jsonlFile && !isUploaded) {
+      tempJsonlUpload(
+        jsonlFile,
+        (path) => {
+          setUploadedFilePath(path);
+          setIsUploaded(true);
+        },
+        (error) => {
+          alert("failed to upload file: " + error);
+        }
+      );
+    }
+
     if (jsonlFile) {
       setFileSize(jsonlFile.size);
     }

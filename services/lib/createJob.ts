@@ -1,7 +1,4 @@
-import { v4 } from "uuid";
-import { useRef } from "react";
 import { supabase } from "../clients/supabaseClient";
-import { Session } from "@supabase/supabase-js";
 
 export type JobType =
   | "gptj_finetune"
@@ -10,28 +7,19 @@ export type JobType =
   | "gpt2xl_finetune";
 
 interface JobParams {
-  session: Session;
-  file: File;
+  file: string;
   job: JobType;
 }
 
 async function _createJob({
-  session,
   file,
   job: jobType,
 }: JobParams): Promise<
   { data: null; error: string } | { data: string; error: null }
 > {
   await fetch("/api/ensureBucket");
-  const fileName = `${session.user.id}/${v4()}.jsonl`;
-  const { error: storageError } = await supabase.storage
-    .from("jsonl")
-    .upload(fileName, file);
-  if (storageError !== null) {
-    return { error: storageError.message, data: null };
-  }
   const { data, error } = await supabase.rpc("create_job", {
-    this_jsonl_path: fileName,
+    this_jsonl_path: file,
     this_job_type: jobType,
   });
   if (error !== null) {

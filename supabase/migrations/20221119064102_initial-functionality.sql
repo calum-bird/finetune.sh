@@ -86,13 +86,11 @@ DECLARE
     this_jsonl_id uuid := (
         SELECT id 
         FROM storage.objects as o 
-        WHERE o.owner = auth.uid() and o.name = this_jsonl_path
+        WHERE o.name = this_jsonl_path
     );
 BEGIN
-  IF auth.role() != 'authenticated' THEN
-    RETURN 'error1';
-  ELSIF this_jsonl_id is NULL THEN
-    RETURN this_jsonl_path;
+  IF this_jsonl_id is NULL THEN
+    RETURN 'jsonl not found!';
   ELSE 
     insert into queue (job_type, jsonl, "user") 
     VALUES (this_job_type, this_jsonl_id, auth.uid());

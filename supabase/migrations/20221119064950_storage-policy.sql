@@ -6,15 +6,5 @@
 create policy "Public Insert Access" 
 on storage.objects for 
 insert with check(
-    bucket_id = 'jsonl'::text AND
-    auth.role() = 'authenticated' AND
-    ((storage.foldername(name))[1] = (auth.uid())::text) 
-);
-
-create policy "Public Select Access" 
- on storage.objects for select
- using ( 
-    bucket_id = 'jsonl'::text AND
-    auth.role() = 'authenticated' AND
-    ((storage.foldername(name))[1] = (auth.uid())::text) 
+    true
 );
