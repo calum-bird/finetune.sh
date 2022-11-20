@@ -3,11 +3,13 @@ import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { Listbox, RadioGroup, Transition } from "@headlessui/react";
 import { ShieldCheckIcon } from "@heroicons/react/24/outline";
 import Graph from "./network";
-import { Session } from "@supabase/supabase-js";
 import { ComponentSession } from "../services/lib/useSession";
 import { logout } from "../services/lib/logout";
 import { FinetuneJob, getJobs } from "../services/lib/getJobs";
-const MAX_FILE_SIZE = 1024 * 1024 * 1024 * 5; // 5gb
+import FileUploader from "./fileUploader";
+import { createJob } from "../services/lib/createJob";
+import { LoginFlow } from "./loginFlow";
+
 interface Variant {
   name: string;
   params: number;
@@ -198,6 +200,29 @@ function ProductForm({
   session: ComponentSession;
 }) {
   const [jsonlFile, setJsonlFile] = useState<File | null>(null);
+  const [loggingIn, setLoggingIn] = useState(false);
+
+  const startJob = () => {
+    if (session === "fetching" || session === "invalid") {
+      setLoggingIn(true);
+      return;
+    } else if (jsonlFile !== null) {
+      createJob(
+        {
+          session,
+          file: jsonlFile,
+          job: "gptj_finetune",
+        },
+        () => {
+          alert("successfully queued finetuning job");
+        },
+        (error) => {
+          alert("failed to queue finetuning job: " + error);
+        }
+      );
+    }
+  };
+
   return (
     <div className="mt-10 lg:col-start-1 lg:row-start-2 lg:max-w-lg lg:self-start">
       <section aria-labelledby="options-heading">
@@ -220,38 +245,28 @@ function ProductForm({
             />
           </div>
 
-          <div className="mt-3">
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-gray-300">
-                JSON-L file
-              </label>
-              <input
-                type="file"
-                accept=".jsonl"
-                onChange={(e) => {
-                  const files = e.target.files;
-                  if (files !== null) {
-                    if (files.length === 1) {
-                      const file = files.item(0);
-                      if (file!.size > MAX_FILE_SIZE) {
-                        alert("File size too large! Contact us for help");
-                      } else {
-                        setJsonlFile(file);
-                      }
-                    }
-                  }
+          <FileUploader jsonlFile={jsonlFile} setJsonlFile={setJsonlFile} />
+
+          {loggingIn ? (
+            <LoginFlow />
+          ) : (
+            <div className="mt-10">
+              <button
+                type="submit"
+                className="flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 py-3 px-8 text-base font-medium text-white hover:bg-indigo-700 disabled:opacity-50 disabled:hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
+                disabled={jsonlFile === null}
+                onClick={(e) => {
+                  e.preventDefault();
+                  startJob();
                 }}
-              />
+              >
+                {jsonlFile === null
+                  ? "Select your dataset first."
+                  : "Start finetuning 🚀"}
+              </button>
             </div>
-          </div>
-          <div className="mt-10">
-            <button
-              type="submit"
-              className="flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 py-3 px-8 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
-            >
-              Get Started
-            </button>
-          </div>
+          )}
+
           <div className="mt-6 text-center">
             <a href="#" className="group inline-flex text-base font-medium">
               <ShieldCheckIcon
@@ -373,7 +388,7 @@ function VariantSelector({
                 key={index}
                 className={({ active }) =>
                   classNames(
-                    active ? "text-white bg-indigo-600" : "text-gray-200",
+                    active ? "text-white bg-indigo-600" : "text-gray-800",
                     "cursor-default select-none relative py-2 pl-10 pr-4"
                   )
                 }

@@ -4,7 +4,7 @@ import { createJob } from "../services/lib/createJob";
 import { logout } from "../services/lib/logout";
 import { ComponentSession } from "../services/lib/useSession";
 import { Session } from "@supabase/supabase-js";
-import Login, { LoginModule } from "./login";
+import { LoginFlow } from "../components/loginFlow";
 const MAX_FILE_SIZE = 1024 * 1024 * 1024 * 5; // 5gb
 
 function LoggedInModule({ session }: { session: Session }) {
@@ -80,20 +80,15 @@ function LoggedInModule({ session }: { session: Session }) {
 function TempLoadTester({ session }: { session: ComponentSession }) {
   return (
     <div className="bg-slate-700">
-      {"THIS SECTION IS TEMPORARY :) "}
-      <div>
-        session:{" "}
-        {session === "invalid" ? (
-          <>
-            "invalid"
-            <LoginModule />
-          </>
-        ) : session === "fetching" ? (
-          "loading..."
-        ) : (
-          <LoggedInModule session={session} />
-        )}
-      </div>
+      {session === "invalid" ? (
+        <>
+          <LoginFlow />
+        </>
+      ) : session === "fetching" ? (
+        "loading..."
+      ) : (
+        <LoggedInModule session={session} />
+      )}
     </div>
   );
 }

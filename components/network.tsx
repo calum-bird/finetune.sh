@@ -12,7 +12,23 @@ function genRandomTree(N = 300, reverse = false) {
       .filter((id) => id)
       .map((id) => ({
         [reverse ? "target" : "source"]: id,
-        [reverse ? "source" : "target"]: Math.round(Math.random() * (id - 1)),
+        [reverse ? "source" : "target"]: Math.round(
+          /*
+          This is rounder by introducing a bias towards
+          the center :), but not all nodes have links :(
+          */
+          // (Math.random() * (id - 1) * 1) / (id / N)
+
+          /*
+          This is less round :(, but all nodes have links :)
+          */
+          Math.random() * (id - 1)
+
+          /*
+          This is rounder :), and all nodes have links :)
+          */
+          // Anyone wanna fill in the blank? lol
+        ),
       })),
   };
 }
@@ -24,21 +40,21 @@ export default function Graph(props: any) {
   return (
     <ForceGraph3D
       ref={fgRef}
-      graphData={genRandomTree(Math.ceil(modelSize / 5), true)}
-      linkColor={(d) => "rgb(255,255,255)"}
-      linkVisibility={true}
-      linkOpacity={0.5}
-      nodeColor={(d) => "rgb(99,102,241)"}
+      graphData={genRandomTree(Math.ceil(modelSize / 5), false)}
+      linkColor={() => "rgb(255,255,255, 150)"}
+      nodeColor={() => "rgb(99,102,241)"}
       nodeOpacity={1.0}
+      nodeRelSize={5}
       backgroundColor="rgba(0,0,0,0)"
       width={526}
       height={526}
       showNavInfo={false}
       cooldownTicks={240}
       onEngineStop={() => {
-        if (fgRef.current) {
-          //fgRef.current.zoomToFit(400);
-          console.log("Fix zoom lol");
+        console.log("Engine stopped...");
+        if (fgRef.current && fgRef.current.zoomToFit) {
+          console.log("Zooming...");
+          fgRef.current.zoomToFit(400);
         }
       }}
     />
