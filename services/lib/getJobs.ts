@@ -1,7 +1,7 @@
 import { v4 } from "uuid";
 import { useRef } from "react";
 import { supabase } from "../clients/supabaseClient";
-import { PostgrestError, Session } from "@supabase/supabase-js";
+import { PostgrestError } from "@supabase/supabase-js";
 import { JobType } from "./createJob";
 
 export interface FinetuneJob {

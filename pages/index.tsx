@@ -5,6 +5,7 @@ import { logout } from "../services/lib/logout";
 import { ComponentSession } from "../services/lib/useSession";
 import { Session } from "@supabase/supabase-js";
 import { LoginFlow } from "../components/loginFlow";
+
 const MAX_FILE_SIZE = 1024 * 1024 * 1024 * 5; // 5gb
 
 function LoggedInModule({ session }: { session: Session }) {
@@ -96,7 +97,6 @@ function TempLoadTester({ session }: { session: ComponentSession }) {
 export default function Home({ session }: { session: ComponentSession }) {
   return (
     <div>
-      <TempLoadTester session={session} />
       <Overview session={session} />
     </div>
   );

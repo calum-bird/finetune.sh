@@ -78,8 +78,8 @@ export default function FileUploader(props: any) {
               >
                 <span>
                   {jsonlFile === null
-                    ? "Upload a file"
-                    : "Upload a different file"}
+                    ? "Upload your dataset"
+                    : "Upload a different dataset"}
                 </span>
                 <input
                   id="file-upload"
