@@ -5,7 +5,7 @@
 
 CREATE TABLE IF NOT EXISTS public.queue
 (
-    id uuid NOT NULL DEFAULT extensions.uuid_generate_v4(),
+    id uuid NOT NULL DEFAULT uuid_generate_v4(),
     created_at timestamp with time zone NOT NULL DEFAULT now(),
     "user" uuid NOT NULL,
     jsonl uuid,
@@ -47,18 +47,18 @@ CREATE POLICY "Public Insert Access"
 
 CREATE OR REPLACE FUNCTION public.request_job(
 	)
-    RETURNS public.queue
+    RETURNS queue
     LANGUAGE 'sql'
     COST 100
     VOLATILE PARALLEL UNSAFE
 AS $BODY$
   with latest_queue as (
-    select * from public.queue
-    where (public.queue.status = 0)
+    select * from queue
+    where (queue.status = 0)
     order by created_at asc
     limit 1
   )
-  update public.queue q SET status = 1, status_change_at = NOW()  FROM latest_queue WHERE latest_queue.id = q.id RETURNING q.*;
+  update queue q SET status = 1, status_change_at = NOW()  FROM latest_queue WHERE latest_queue.id = q.id RETURNING q.*;
 $BODY$;
 
 ALTER FUNCTION public.request_job()
@@ -94,7 +94,7 @@ BEGIN
   ELSIF this_jsonl_id is NULL THEN
     RETURN this_jsonl_path;
   ELSE 
-    insert into public.queue (job_type, jsonl, "user") 
+    insert into queue (job_type, jsonl, "user") 
     VALUES (this_job_type, this_jsonl_id, auth.uid());
     RETURN 'success';
   END IF;
