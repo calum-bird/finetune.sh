@@ -1,14 +1,16 @@
 import { RadioGroup } from "@headlessui/react";
-import { Model, models } from "../../util/util";
+import { Model } from "../../util/util";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
 export default function SizeSelector({
+  models,
   selectedModel,
   setSelectedModel,
 }: {
+  models: Model[];
   selectedModel: {
     name: string;
     description: string;
@@ -26,7 +28,7 @@ export default function SizeSelector({
         Size
       </RadioGroup.Label>
       <div className="mt-1 grid grid-cols-1 gap-4 sm:grid-cols-2">
-        {models.map((size) => (
+        {models.map((size: any) => (
           <RadioGroup.Option
             as="div"
             key={size.name}

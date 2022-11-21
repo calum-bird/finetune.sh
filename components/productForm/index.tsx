@@ -8,25 +8,32 @@ import { useState } from "react";
 import { Model } from "../../util/util";
 
 export default function ProductForm({
+  models,
   selectedModel,
   setSelectedModel,
   selectedVariant,
   setSelectedVariant,
   session,
+  uploadedFilePath,
+  setUploadedFilePath,
+  uploadedFileName,
+  setUploadedFileName,
 }: {
+  models: Model[];
   selectedModel: Model;
   setSelectedModel: (model: Model) => void;
   selectedVariant: number;
   setSelectedVariant: (variant: number) => void;
   session: ComponentSession;
+  uploadedFilePath: string | "loading";
+  setUploadedFilePath: (path: string | "loading") => void;
+  uploadedFileName: string | undefined;
+  setUploadedFileName: (name: string | undefined) => void;
 }) {
-  const [uploadedFilePath, setUploadedFilePath] = useState<string | "loading">(
-    ""
-  );
   const [loggingIn, setLoggingIn] = useState(false);
+  console.log("Uploaded @ productForm:", uploadedFileName);
 
   const startJob = () => {
-    console.log(uploadedFilePath);
     if (session === "fetching" || session === "invalid") {
       setLoggingIn(true);
       return;
@@ -37,7 +44,9 @@ export default function ProductForm({
           job: "gptj_finetune",
         },
         () => {
-          alert("successfully queued finetuning job");
+          setUploadedFileName(undefined);
+          setUploadedFilePath("loading");
+          window.location.reload();
         },
         (error) => {
           alert("failed to queue finetuning job: " + error);
@@ -56,6 +65,7 @@ export default function ProductForm({
         <form>
           <div className="sm:flex sm:justify-between">
             <SizeSelector
+              models={models}
               selectedModel={selectedModel}
               setSelectedModel={setSelectedModel}
             />
@@ -67,8 +77,11 @@ export default function ProductForm({
               selectedModel={selectedModel}
             />
           </div>
-          <FileUploader setUploadedFilePath={setUploadedFilePath} />
-          {uploadedFilePath === "loading" ? "Uploading... " : null}
+          <FileUploader
+            setUploadedFilePath={setUploadedFilePath}
+            setUploadedFileName={setUploadedFileName}
+            uploadedFileName={uploadedFileName}
+          />
           {loggingIn ? (
             <LoginFlow />
           ) : (
@@ -76,13 +89,13 @@ export default function ProductForm({
               <button
                 type="submit"
                 className="flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 py-3 px-8 text-base font-medium text-white hover:bg-indigo-700 disabled:opacity-50 disabled:hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
-                disabled={uploadedFilePath === ""}
+                disabled={uploadedFilePath === "loading"}
                 onClick={(e) => {
                   e.preventDefault();
                   startJob();
                 }}
               >
-                {uploadedFilePath === ""
+                {uploadedFilePath === "loading"
                   ? "Upload your dataset to continue."
                   : "Start finetuning 🚀"}
               </button>
