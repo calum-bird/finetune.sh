@@ -66,7 +66,6 @@ export default function FileUploader(props: any) {
       setFileSize(jsonlFile.size);
     }
 
-    console.log("Uploaded @ fileUploader:", uploadedFileName);
     if (!jsonlFile && uploadedFileName !== undefined) {
       // Create a fake file object
       setJsonlFile(
