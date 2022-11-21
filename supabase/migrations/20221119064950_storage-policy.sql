@@ -8,3 +8,11 @@ on storage.objects for
 insert with check(
     true
 );
+
+create policy "User Select Result Access" 
+on storage.objects for 
+insert with check(
+    bucket_id = 'results'::text AND
+    auth.role() = 'authenticated'::text AND 
+    ((storage.foldername(name))[1] = (auth.uid())::text) 
+);

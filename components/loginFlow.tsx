@@ -15,13 +15,15 @@ const handleMagicLogin = (
   }
 };
 
-export function LoginFlow(): JSX.Element {
+export function LoginFlow(props: any): JSX.Element {
   const [email, setEmail] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState("");
   const [didSend, setDidSend] = useState(false);
 
+  const { cancelFunc } = props;
+
   return (
-    <div className="mt-8 w-full flex flex-col gap-1">
+    <div className="w-full flex flex-col gap-1">
       <div>
         <label
           htmlFor="email"
@@ -54,6 +56,15 @@ export function LoginFlow(): JSX.Element {
       >
         {didSend ? "Check your email for a login link! 🚀" : "Sign in"}
       </button>
+      {cancelFunc ? (
+        <button
+          type="button"
+          onClick={cancelFunc}
+          className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 hover:bg-indigo-700 py-2 px-4 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-theme-primary-dark focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+        >
+          Cancel
+        </button>
+      ) : null}
       {errorMessage && <div className="my-5">{errorMessage}</div>}
     </div>
   );

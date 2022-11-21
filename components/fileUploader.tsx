@@ -48,6 +48,7 @@ export default function FileUploader(props: any) {
         },
         (error) => {
           alert("failed to upload file: " + error);
+          console.error("failed to upload file: ", error);
         }
       );
     }

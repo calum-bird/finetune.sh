@@ -1,5 +1,3 @@
-import { v4 } from "uuid";
-import { useRef } from "react";
 import { supabase } from "../clients/supabaseClient";
 import { PostgrestError } from "@supabase/supabase-js";
 import { JobType } from "./createJob";
