@@ -11,7 +11,10 @@ const handleMagicLogin = (
     login(
       email,
       () => setDidSend(true),
-      (e) => setErrorMessage(e.message)
+      (e) => {
+        setErrorMessage(e.message);
+        console.error(e);
+      }
     );
   }
 };
