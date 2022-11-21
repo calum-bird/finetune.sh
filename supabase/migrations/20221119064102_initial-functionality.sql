@@ -5,7 +5,7 @@
 
 CREATE TABLE IF NOT EXISTS public.queue
 (
-    id uuid NOT NULL DEFAULT uuid_generate_v4(),
+    id uuid NOT NULL DEFAULT extensions.uuid_generate_v4(),
     created_at timestamp with time zone NOT NULL DEFAULT now(),
     "user" uuid NOT NULL,
     jsonl uuid,
@@ -47,7 +47,7 @@ CREATE POLICY "Public Insert Access"
 
 CREATE OR REPLACE FUNCTION public.request_job(
 	)
-    RETURNS queue
+    RETURNS public.queue
     LANGUAGE 'sql'
     COST 100
     VOLATILE PARALLEL UNSAFE
