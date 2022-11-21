@@ -15,11 +15,6 @@ export default function JobCard({ job }: { job: FinetuneJob }): JSX.Element {
     if (job.status == 2) {
       supabase.storage
         .from("results")
-        .list()
-        .then((e) => console.log("MY LIST", e));
-
-      supabase.storage
-        .from("results")
         .createSignedUrl(
           `${job.user}/${job.id}.zip`,
           60 * 60 * 24 * 30 // 30 days
