@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { login } from "../services/lib/login";
+import { HeartIcon, XCircleIcon } from "@heroicons/react/24/outline";
 
 const handleMagicLogin = (
   email: string,
@@ -24,13 +25,17 @@ export function LoginFlow(props: any): JSX.Element {
 
   return (
     <div className="w-full flex flex-col gap-1">
-      <div>
+      <div className="flex flex-row justify-between">
         <label
           htmlFor="email"
           className="block text-sm font-medium text-gray-300"
         >
           Email address
         </label>
+        <XCircleIcon
+          className="h-6 font-thin translate-x-3 -translate-y-3"
+          onClick={cancelFunc}
+        />
       </div>
       <div className="mt-1">
         <input
@@ -56,15 +61,6 @@ export function LoginFlow(props: any): JSX.Element {
       >
         {didSend ? "Check your email for a login link! 🚀" : "Sign in"}
       </button>
-      {cancelFunc ? (
-        <button
-          type="button"
-          onClick={cancelFunc}
-          className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 hover:bg-indigo-700 py-2 px-4 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-theme-primary-dark focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed mt-2"
-        >
-          Cancel
-        </button>
-      ) : null}
       {errorMessage && <div className="my-5">{errorMessage}</div>}
     </div>
   );
