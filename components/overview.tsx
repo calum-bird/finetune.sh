@@ -81,8 +81,6 @@ export default function Overview({ session }: { session: ComponentSession }) {
       setUploadedFilePath(storedFilePath);
       setUploadedFileName(storedFileName);
     }
-
-    console.log("Uploaded @ overview:", uploadedFileName);
   }, [session]);
 
   return (

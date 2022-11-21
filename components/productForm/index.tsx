@@ -31,7 +31,6 @@ export default function ProductForm({
   setUploadedFileName: (name: string | undefined) => void;
 }) {
   const [loggingIn, setLoggingIn] = useState(false);
-  console.log("Uploaded @ productForm:", uploadedFileName);
 
   const startJob = () => {
     if (session === "fetching" || session === "invalid") {
