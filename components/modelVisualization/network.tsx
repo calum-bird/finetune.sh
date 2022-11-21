@@ -12,7 +12,23 @@ function genRandomTree(N = 300, reverse = false) {
       .filter((id) => id)
       .map((id) => ({
         [reverse ? "target" : "source"]: id,
-        [reverse ? "source" : "target"]: Math.round(Math.random() * (id - 1)),
+        [reverse ? "source" : "target"]: Math.round(
+          /*
+          This is rounder by introducing a bias towards
+          the center :), but not all nodes have links :(
+          */
+          // (Math.random() * (id - 1) * 1) / (id / N)
+
+          /*
+          This is less round :(, but all nodes have links :)
+          */
+          Math.random() * (id - 1)
+
+          /*
+          This is rounder :), and all nodes have links :)
+          */
+          // Anyone wanna fill in the blank? lol
+        ),
       })),
   };
 }
@@ -24,7 +40,7 @@ export default function Graph(props: any) {
   return (
     <ForceGraph3D
       ref={fgRef}
-      graphData={genRandomTree(Math.ceil(modelSize / 5), true)}
+      graphData={genRandomTree(Math.ceil(modelSize / 5), false)}
       linkColor={() => "rgb(255,255,255, 150)"}
       nodeColor={() => "rgb(99,102,241)"}
       nodeOpacity={1.0}
