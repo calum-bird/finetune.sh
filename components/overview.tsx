@@ -1,14 +1,43 @@
 import { useEffect, useState } from "react";
 import { ComponentSession } from "../services/lib/useSession";
-import { Model, models } from "../util/util";
+import { Model } from "../util/util";
 import ProductForm from "./productForm";
 import JobQueue from "./jobQueue";
 import ModelVisualization from "./modelVisualization";
 import Header from "./header";
 
+const models: Model[] = [
+  {
+    name: "GPT-2",
+    description: "Okay, I see you!",
+    variants: [
+      { name: "Medium", params: 355 },
+      { name: "Large", params: 774 },
+      { name: "Extra Large", params: 1500 },
+    ],
+  },
+  /*
+  {
+    name: "GPT-J",
+    description: "Whoa this is a big boy!",
+    variants: [{ name: "6B", params: 6000 }],
+  },
+  {
+    name: "Bloom",
+    description: "Holy shit!",
+    variants: [{ name: "175B", params: 175000 }],
+  },*/
+];
+
 export default function Overview({ session }: { session: ComponentSession }) {
   const [selectedModel, setSelectedModel] = useState<Model>(models[0]);
   const [selectedVariant, setSelectedVariant] = useState(0);
+  const [uploadedFilePath, setUploadedFilePath] = useState<string | "loading">(
+    "loading"
+  );
+  const [uploadedFileName, setUploadedFileName] = useState<string | undefined>(
+    undefined
+  );
   const loggedOut = session === "fetching" || session === "invalid";
 
   const customSetSelectedModel = (model: Model) => {
@@ -24,6 +53,16 @@ export default function Overview({ session }: { session: ComponentSession }) {
     setSelectedVariant(variant);
   };
 
+  const customSetUploadedFilePath = (path: string | "loading") => {
+    localStorage.setItem("uploadedFilePath", path);
+    setUploadedFilePath(path);
+  };
+
+  const customSetUploadedFileName = (name: string | undefined) => {
+    localStorage.setItem("uploadedFileName", name ?? "");
+    setUploadedFileName(name);
+  };
+
   useEffect(() => {
     // Pull selectedModel and selectedVariant from localStorage
     const storedModelName = localStorage.getItem("selectedModel");
@@ -34,6 +73,13 @@ export default function Overview({ session }: { session: ComponentSession }) {
         setSelectedModel(model);
         setSelectedVariant(parseInt(storedVariant));
       }
+    }
+    // Pull uploadedFilePath and uploadedFileName from localStorage
+    const storedFilePath = localStorage.getItem("uploadedFilePath");
+    const storedFileName = localStorage.getItem("uploadedFileName");
+    if (storedFilePath && storedFileName) {
+      setUploadedFilePath(storedFilePath);
+      setUploadedFileName(storedFileName);
     }
   }, [session]);
 
@@ -52,10 +98,15 @@ export default function Overview({ session }: { session: ComponentSession }) {
           )}
         </div>
         <ProductForm
+          models={models}
           selectedModel={selectedModel}
           setSelectedModel={customSetSelectedModel}
           selectedVariant={selectedVariant}
           setSelectedVariant={customSetSelectedVariant}
+          uploadedFilePath={uploadedFilePath}
+          setUploadedFilePath={customSetUploadedFilePath}
+          uploadedFileName={uploadedFileName}
+          setUploadedFileName={customSetUploadedFileName}
           session={session}
         />
       </div>

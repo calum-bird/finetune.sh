@@ -15,7 +15,7 @@ export default function JobQueue(): JSX.Element {
       <h2 className="text-xl font-semibold">Jobs</h2>
       <div className="mt-2 flex flex-col gap-3 mx-1">
         {jobs.map((job) => (
-          <JobCard job={job} />
+          <JobCard job={job} key={job.id} />
         ))}
       </div>
     </div>

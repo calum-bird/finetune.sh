@@ -49,11 +49,12 @@ export function createJob(
   onError: (error: string) => void
 ): void {
   _createJob(job).then(({ data, error }) => {
-    if (data) {
+    if (data !== null) {
       console.log("YAY!", data);
-      // onSuccess(data);
+      onSuccess();
     } else {
       console.error("BAD ERROR", error);
+      onError(error);
     }
   });
 }
