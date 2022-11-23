@@ -16,6 +16,7 @@ export function getJobs(
   onSuccess: (jobs: FinetuneJob[]) => void,
   onError: (error: PostgrestError) => void
 ): void {
+  /*
   supabase
     .from("queue")
     .select("*")
@@ -26,4 +27,16 @@ export function getJobs(
         onError(error);
       }
     });
+    */
+  onSuccess([
+    {
+      created_at: "2021-08-01T00:00:00.000000Z",
+      id: "1",
+      job_type: "gpt2md_finetune",
+      jsonl: "1",
+      status: 2,
+      status_change_at: "2021-08-01T00:00:00.000000Z",
+      user: "some_user",
+    },
+  ]);
 }
