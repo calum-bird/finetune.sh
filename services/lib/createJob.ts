@@ -40,6 +40,8 @@ async function _createJob({
   }
   console.log("FUncTION RESPONSE", data);
 
+  await fetch("/api/startWorker");
+
   return { error: null, data: "success" };
 }
 
